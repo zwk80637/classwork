@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 22 12:00:16 2020
+
+@author: zacharykeung
+"""
+
+import numpy as np
+import matplotlib.pyplot as p
+
+'''
+Variable definitions
+'''
+# Array to walk in initialized as 'a'
+a = np.zeros((200, 200))
+
+#Possible increments of steps
+stepChoices=[[-1,0],[0,-1],[1,0],[0,1]]
+
+#Position to stick to initially and mark it as taken. 
+a[100,100]=1  
+
+# Now we start with an empty array, since we do not know which side we want to start
+startPosa=[]
+startPosb=[]
+
+#put image on a variable to interactively modify the output. We update this variable while drawing
+im = p.imshow(a, interpolation='bicubic', cmap='viridis')
+
+'''
+Program Execution
+'''
+
+#Select the starting position on the border
+starta=np.random.randint(0,200)
+startb=np.random.randint(0,200)
+
+startAx=np.random.randint(0,4)
+startBx=np.random.randint(0,4)
+ 
+
+#Set the starting position from where the random walker starts walking
+if startAx==0: startPosa=np.array([0,starta])
+elif startAx==1: startPosa=np.array([199,starta])
+elif startAx==2: startPosa=np.array([starta,0])
+elif startAx==3: startPosa=np.array([starta,199])
+
+if startBx==0: startPosb=np.array([0,startb])
+elif startBx==1: startPosb=np.array([199,startb])
+elif startBx==2: startPosb=np.array([startb,0])
+elif startBx==3: startPosb=np.array([startb,199])
+
+# np.not_equal(startPosa,startPosb) - possibly a way to prevent the two start positions from being the same. 
+
+print(startPosa)
+print(startPosb)
+
+#We walk 1000 steps
+i=0 #step variable (variables can be defined everywhere)
+p.ion()
+while i<1000: # while the variable i is smaller that 1000, we increase its value
+    i+=1
+    #Randomly choose a step to go
+    step1=np.array(stepChoices[np.random.randint(0,4)])
+    step2=np.array(stepChoices[np.random.randint(0,4)])
+    #Add the step to the current position
+    startPosa=startPosa+step1
+    startPosb=startPosb+step2
+    # If the new position is within the array
+    if startPosa[0]>=0 and startPosa[1]>=0 and startPosa[0]<200 and startPosa[1]<200:
+        # Set the last position as taken aka stick to the structure  
+        a[(startPosa-np.array(step1))[0],(startPosa-np.array(step1))[1]]=1
+        # refresh the image
+        im.set_data(a) # set the data
+        p.draw() # draw the image
+        p.pause(0.001) # give the computer time to draw
+    else:
+        # else go 1 step back and choose again
+        startPosa=startPosa-np.array(step1)
+        
+    if startPosb[0]>=0 and startPosb[1]>=0 and startPosb[0]<200 and startPosb[1]<200:
+        # Set the last position as taken aka stick to the structure  
+        a[(startPosb-np.array(step2))[0],(startPosb-np.array(step2))[1]]=1
+        # refresh the image
+        im.set_data(a) # set the data
+        p.draw() # draw the image
+        p.pause(0.001) # give the computer time to draw
+    else:
+        # else go 1 step back and choose again
+        startPosb=startPosb-np.array(step2)
+    p.ioff()
+# make a figure of the size of the array
+
+
+p.figure(1)
+# show the array
+p.imshow(a, interpolation='bicubic', cmap='viridis')
+p.show()
